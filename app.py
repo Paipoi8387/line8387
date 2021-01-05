@@ -1,39 +1,54 @@
+
 from flask import Flask, request, abort
+import os
+
 from linebot import (
-        　LineBotApi, WebhookHandler
-        )
+            LineBotApi, WebhookHandler
+            )
 from linebot.exceptions import (
-        　InvalidSignatureError
-        )
+            InvalidSignatureError
+            )
 from linebot.models import (
-        　MessageEvent, TextMessage, TextSendMessage
-        )
+            MessageEvent, TextMessage, TextSendMessage,
+            )
 
 app = Flask(__name__)
 
-ACCESS_TOKEN = Hn2OOEvFVTl3aMSYhHJXfucVLVJLgodZBkc7CMKEx8YgGlSpOeekx+qV/NxjQLXFUx+LhgpeuxctLzbrbo9kwqsDhwg9uJM75wcITCKygM3PKdxOfSeuze2rcbWI+qIezHVI2XJ8Rd6PA7ptnyThKQdB04t89/1O/w1cDnyilFU= 
-SECRET = 9be3d4a4164ffe583664b29dcb6aa2c0
+#環境変数取得
+YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
+YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
-line_bot_api = LineBotApi(ACCESS_TOKEN)
-handler = WebhookHandler(SECRET)
+line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
-@app.route(“/callback”, methods=[‘POST’])
-def callback():
-    　signature = request.headers[‘X-Line-Signature’] 　body = request.get_data(as_text=True)
-    　app.logger.info(“Request body: ” + body)
+@app.route("/")
+def hello_world():
+        return "hello world!"
 
-    　try:
-        　　handler.handle(body, signature)
-        　except InvalidSignatureError:
-            　　abort(400)
+    @app.route("/callback", methods=['POST'])
+    def callback():
+            # get X-Line-Signature header value
+                signature = request.headers['X-Line-Signature']
 
-            　return ‘OK’
+                    # get request body as text
+                        body = request.get_data(as_text=True)
+                            app.logger.info("Request body: " + body)
 
-            @handler.add(MessageEvent, message=TextMessage)
-            def handle_message(event):
-                　line_bot_api.reply_message(
-                        　　event.reply_token,
-                        　　TextSendMessage(text=event.message.text))
+                                # handle webhook body
+                                    try:
+                                                handler.handle(body, signature)
+                                                    except InvalidSignatureError:
+                                                                abort(400)
 
-                if __name__ == “__main__”:
-                    　app.run()
+                                                                    return 'OK'
+
+                                                                @handler.add(MessageEvent, message=TextMessage)
+                                                                def handle_message(event):
+                                                                        line_bot_api.reply_message(
+                                                                                        event.reply_token,
+                                                                                                TextSendMessage(text=event.message.text))
+
+                                                                        if __name__ == "__main__":
+                                                                            #    app.run()
+                                                                                port = int(os.getenv("PORT"))
+                                                                                    app.run(host="0.0.0.0", port=port)
