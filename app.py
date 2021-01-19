@@ -16,15 +16,17 @@ from linebot.models import (
 app = Flask(__name__)
 
 #環境変数取得
-YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
-YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
+YOUR_CHANNEL_ACCESS_TOKEN = os.environ["kG/lmxnJc2oRQ1TcyBo9VZTPQ8CGxTm86Pomx0uxlzNLiFSFFQdjW/7NWDnM9xb66JTFIt9K6qXww0yf90/mRATbH8IJEFeooYiOLBjRffcLcyo/u4Gih5NIo7KNSNEDsTqOFzRNbJGDw8rD0q9SzwdB04t89/1O/w1cDnyilFU=
+"]
+YOUR_CHANNEL_SECRET = os.environ["13235e5290c02cf879236e371be9222e"]
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
 @app.route("/")
 def hello_world():
-    return "hello world!"
+	get_website()
+    	return "hello world!"
 
 def get_website():
         url = 'https://github.com/Paipoi8387/line8387'
@@ -33,7 +35,7 @@ def get_website():
 	res = requests.get(url)
 	res.raise_for_status()
 	soup = bs4.BeautifulSoup(res.text,'html.parser')# Parser
-	elems = soup.select('.limited.rfloat') # class要素の取得
+	elems = soup.select('blogentry') # class要素の取得
 	str_elems = str(elems) # stringに変換
 	try:
 		f = open(file)
@@ -74,6 +76,5 @@ def handle_message(event):
 
 if __name__ == "__main__":
 #    app.run()
-    if(get_website()):
-        port = int(os.getenv("PORT"))
-        app.run(host="0.0.0.0", port=port)
+	port = int(os.getenv("PORT"))
+	app.run(host="0.0.0.0", port=port)
