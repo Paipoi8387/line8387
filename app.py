@@ -29,7 +29,7 @@ def hello_world():
     	return "hello world!"
 
 def get_website():
-        url = 'https://github.com/Paipoi8387/line8387'
+        url = 'http://ismise.blog107.fc2.com/'
         file = 'hoge.txt'
 
 	res = requests.get(url)
