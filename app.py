@@ -1,5 +1,7 @@
 from flask import Flask, request, abort
 import os
+import requests
+import bs4
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -23,6 +25,29 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 @app.route("/")
 def hello_world():
     return "hello world!"
+
+def get_website():
+        url = 'https://github.com/Paipoi8387/line8387'
+        file = 'hoge.txt'
+
+	res = requests.get(url)
+	res.raise_for_status()
+	soup = bs4.BeautifulSoup(res.text,'html.parser')# Parser
+	elems = soup.select('.limited.rfloat') # class要素の取得
+	str_elems = str(elems) # stringに変換
+	try:
+		f = open(file)
+		old_elems  = f.read()
+	except:
+		old_elems = ' '
+	if(str_elems == old_elems):
+		return False
+	else:
+		f = open(file, 'w') # 上書きする
+		f.writelines(str_elems)
+		f.close()
+		return True
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -49,5 +74,6 @@ def handle_message(event):
 
 if __name__ == "__main__":
 #    app.run()
-    port = int(os.getenv("PORT"))
-    app.run(host="0.0.0.0", port=port)
+    if(get_website()):
+        port = int(os.getenv("PORT"))
+        app.run(host="0.0.0.0", port=port)
